@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player IPTV</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="player-page">
+    <div class="navbar text-center">
+        <a href="#" onclick="switchTab('filmes')" id="filmes-tab" class="active">Filmes</a>
+        <a href="#" onclick="switchTab('series')" id="series-tab">Séries</a>
+        <a href="#" onclick="switchTab('tv')" id="tv-tab">TV ao Vivo</a>
+        <div id="auth-section" class="inline-block">
+            <!-- This will be populated by auth.js -->
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto p-4">
+        <input type="text" id="search" placeholder="Buscar..." class="w-full p-3 bg-gray-800 text-white border-none rounded-md mb-6 focus:outline-none" oninput="filterItems()">
+        
+        <div id="filters" class="flex gap-4 mb-6">
+            <!-- Categoria Filter -->
+            <select id="category-filter" class="bg-gray-800 text-white p-2 rounded-md focus:outline-none">
+                <option value="">Todas as Categorias</option>
+                <!-- Options will be populated by player.js -->
+            </select>
+
+            <!-- Year Filter -->
+            <select id="year-filter" class="bg-gray-800 text-white p-2 rounded-md focus:outline-none">
+                <option value="">Todos os Anos</option>
+                <!-- Options will be populated by player.js -->
+            </select>
+        </div>
+
+        <div id="progress-container">
+            <p class="text-gray-400">Carregando lista de canais...</p>
+            <div id="progress-bar">
+                <div id="progress"></div>
+            </div>
+        </div>
+        
+        <div id="categories">
+            <div class="category active" id="filmes-category">
+                <h2>Filmes</h2>
+                <div id="filmes" class="channel-list"></div>
+                <div id="filmes-pagination" class="pagination flex justify-center gap-2 mt-4"></div>
+            </div>
+            <div class="category" id="series-category">
+                <h2>Séries</h2>
+                <div id="series" class="channel-list"></div>
+                <div id="series-pagination" class="pagination flex justify-center gap-2 mt-4"></div>
+            </div>
+            <div class="category" id="tv-category">
+                <h2>TV ao Vivo</h2>
+                <div id="tv" class="channel-list"></div>
+                <div id="tv-pagination" class="pagination flex justify-center gap-2 mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Series Modal -->
+    <div id="series-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" class="text-2xl font-bold mb-4"></h2>
+            <div id="modal-seasons" class="max-h-96 overflow-y-auto"></div>
+            <button onclick="closeModal()" class="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">Fechar</button>
+        </div>
+    </div>
+
+    
+
+    <script src="auth.js"></script>
+    <script src="player.js"></script>
+</body>
+</html>

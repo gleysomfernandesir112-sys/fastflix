@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player de Vídeo</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #1a202c; /* Tailwind's gray-900 */
+            color: #e2e8f0; /* Tailwind's gray-200 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        .video-container {
+            position: relative;
+            width: 90%;
+            max-width: 1280px;
+            aspect-ratio: 16 / 9; /* Standard video aspect ratio */
+            background-color: black;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        .back-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background-color: rgba(220, 38, 38, 0.8); /* Red-600 with opacity */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* Full rounded */
+            text-decoration: none;
+            font-size: 1rem;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: rgba(185, 28, 28, 0.9); /* Darker red on hover */
+        }
+        .error-message {
+            color: #ef4444; /* Tailwind's red-500 */
+            margin-top: 1rem;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <a href="player.html" class="back-button">Voltar</a>
+        <video id="videoPlayer" controls autoplay></video>
+    </div>
+    <p id="errorMessage" class="error-message" style="display:none;"></p>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const videoPlayer = document.getElementById('videoPlayer');
+            const errorMessage = document.getElementById('errorMessage');
+            const urlParams = new URLSearchParams(window.location.search);
+            const videoUrl = urlParams.get('videoUrl');
+
+            if (videoUrl) {
+                const decodedUrl = decodeURIComponent(videoUrl);
+                if (Hls.isSupported() && decodedUrl.includes('.m3u8')) {
+                    const hls = new Hls();
+                    hls.loadSource(decodedUrl);
+                    hls.attachMedia(videoPlayer);
+                    hls.on(Hls.Events.ERROR, function (event, data) {
+                        if (data.fatal) {
+                            switch(data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    errorMessage.textContent = 'Erro de rede ao carregar o vídeo. Tente novamente mais tarde.';
+                                    errorMessage.style.display = 'block';
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    errorMessage.textContent = 'Erro de mídia. O vídeo pode estar corrompido ou em um formato não suportado.';
+                                    errorMessage.style.display = 'block';
+                                    break;
+                                default:
+                                    errorMessage.textContent = 'Ocorreu um erro ao reproduzir o vídeo.';
+                                    errorMessage.style.display = 'block';
+                                    break;
+                            }
+                            console.error('HLS fatal error:', data);
+                        }
+                    });
+                } else {
+                    videoPlayer.src = decodedUrl;
+                }
+                videoPlayer.play().catch(error => {
+                    console.error('Erro ao tentar reproduzir o vídeo automaticamente:', error);
+                    errorMessage.textContent = 'O vídeo não pôde ser reproduzido automaticamente. Por favor, clique no botão de play.';
+                    errorMessage.style.display = 'block';
+                });
+            } else {
+                errorMessage.textContent = 'Nenhuma URL de vídeo fornecida.';
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
